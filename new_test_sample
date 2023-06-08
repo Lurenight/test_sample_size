@@ -1,0 +1,43 @@
+#这是优化版的最少样本数计算程序
+
+from scipy.stats import norm
+
+def sample_size(p, d, alpha, beta):
+    """
+    计算最少需要参与测试的样本数量
+    :param p: 目标不良率
+    :param d: 允许的误差
+    :param alpha: 显著性水平
+    :param beta: 可信水平
+    :return: 最少需要参与测试的样本数量
+    """
+    z_alpha = norm.ppf(1 - alpha)
+    z_beta = norm.ppf(beta)
+    n = ((z_alpha + z_beta) ** 2) * p * (1 - p) / (d ** 2)
+    print("")
+    print(f"显著性水平的正态分布Zα: {round(z_alpha,2)}")
+    print(f"可信水平的的正态分布Zβ: {round(z_beta,2)}")
+    return int(n)
+
+p0 = float(input("请输入目标良品率p（例如：99，不用输入%号）："))
+a0 = float(input("请输入显著性水平β（例如：1，不用输入%号,即实际良品率低于测试结果的几率）："))
+b0 = float(input("请输入可信水平β（例如：95，不用输入%号,即实际良品率高于测试结果的几率）："))
+
+d =  (1-p0*0.01)/2
+#允许的误差d满足：p+d<=最低不良率，p-d>=0（无不良品）
+
+p = (1-p0*0.01)-d
+#目标不良率p为为最高不良率（100%-良品率）到0（无不良品）的中位值
+
+alpha = a0*0.01
+beta = b0*0.01
+print("")
+print(f"最低不良率p: {round(p*100+d*100,2)}%")
+print(f"显著性水平α: {a0}%")
+print(f"可信水平β: {b0}%")
+
+n = sample_size(p, d, alpha, beta)
+print("")
+print("")
+print(f"最少需要参与测试的样本数量: {n}")
+
